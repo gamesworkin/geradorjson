@@ -119,6 +119,8 @@ code {
 
 <input type="text" id="playlistUrl" placeholder="Cole aqui o link da playlist do YouTube" />
 
+<input type="text" id="categoria" placeholder="Digite a categoria" />
+
 <input type="text" id="subcategoria" placeholder="Digite a subcategoria (ex: futebol, filmes, jogos...)" />
 
 <button onclick="generateJson()">Gerar videos.json</button>
@@ -149,18 +151,7 @@ code {
       }
     }
 
-    async function getPlaylistTitle(apiKey, playlistId) {
-      const url = `https://www.googleapis.com/youtube/v3/playlists?part=snippet&id=${playlistId}&key=${apiKey}`;
-
-      const response = await fetch(url);
-      const data = await response.json();
-
-      if (!data.items || !data.items.length) {
-        throw new Error('Não foi possível obter o nome da playlist.');
-      }
-
-      return data.items[0].snippet.title;
-    }
+    
 
     async function getPlaylistVideos(apiKey, playlistId) {
       let nextPageToken = '';
@@ -199,6 +190,7 @@ code {
     async function generateJson() {
       const apiKey = 'AIzaSyDNHqERli0UuPqruQwd2UPIBg7nikrjqNE';
       const playlistUrl = document.getElementById('playlistUrl').value.trim();
+      const categoria = document.getElementById('categoria').value.trim();
       const subcategoria = document.getElementById('subcategoria').value.trim();
       const output = document.getElementById('output');
       const status = document.getElementById('status');
@@ -222,7 +214,7 @@ code {
       status.innerHTML = 'Buscando vídeos da playlist...';
 
       try {
-        const playlistTitle = await getPlaylistTitle(apiKey, playlistId);
+        
         const videos = await getPlaylistVideos(apiKey, playlistId);
 
         const finalJson = videos.map(video => ({
@@ -230,7 +222,7 @@ code {
           titulo: video.titulo,
           capa: video.capa,
           link: video.link,
-          categoria: playlistTitle
+          categoria: categoria
         }));
 
         output.value = JSON.stringify(finalJson, null, 2);
